@@ -35,9 +35,16 @@ func parseInput(filename string) ([]Range, []int) {
 }
 
 func inRange(id int, ranges []Range) bool {
-	for _, r := range ranges {
-		if id >= r.Start && id <= r.End {
+	left, right := 0, len(ranges) - 1
+	for left <= right {
+		mid := (left + right) / 2
+		if id >= ranges[mid].Start && id <= ranges[mid].End {
 			return true
+		}
+		if id < ranges[mid].Start {
+			right = mid - 1
+		} else {
+			left = mid + 1
 		}
 	}
 	return false
@@ -73,9 +80,10 @@ func countIDs(ranges []Range) int {
 }
 
 func part1(ranges []Range, ids []int) int {
+	merged := mergeRanges(ranges)
 	count := 0
 	for _, id := range ids {
-		if inRange(id, ranges) {
+		if inRange(id, merged) {
 			count++
 		}
 	}
