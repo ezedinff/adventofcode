@@ -20,6 +20,10 @@ func (p Point) distSq(q Point) int {
 	return dx*dx + dy*dy + dz*dz
 }
 
+type Edge struct {
+	u, v, dist int
+}
+
 type DSU struct {
 	parent, size []int
 }
@@ -64,28 +68,21 @@ func readPoints() []Point {
 	return points
 }
 
-func buildEdges(points []Point) [][3]int {
-	edges := make([][3]int, 0, len(points)*(len(points)-1)/2)
+func buildEdges(points []Point) []Edge {
+	edges := make([]Edge, 0, len(points)*(len(points)-1)/2)
 	for i := range points {
 		for j := i + 1; j < len(points); j++ {
-			edges = append(edges, [3]int{i, j, points[i].distSq(points[j])})
+			edges = append(edges, Edge{i, j, points[i].distSq(points[j])})
 		}
 	}
-	sort.Slice(edges, func(a, b int) bool { return edges[a][2] < edges[b][2] })
+	sort.Slice(edges, func(a, b int) bool { return edges[a].dist < edges[b].dist })
 	return edges
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }
 
 func part1() int {
 	points, edges, dsu := readPoints(), buildEdges(readPoints()), newDSU(len(readPoints()))
-	for i := 0; i < min(conLimitPart1, len(edges)); i++ {
-		dsu.union(edges[i][0], edges[i][1])
+	for i := 0; i < conLimitPart1; i++ {
+		dsu.union(edges[i].u, edges[i].v)
 	}
 	var sizes []int
 	for i := range points {
@@ -101,10 +98,10 @@ func part2() int {
 	points, edges, dsu := readPoints(), buildEdges(readPoints()), newDSU(len(readPoints()))
 	components := len(points)
 	for _, e := range edges {
-		if dsu.union(e[0], e[1]) {
+		if dsu.union(e.u, e.v) {
 			components--
 			if components == 1 {
-				return points[e[0]].x * points[e[1]].x
+				return points[e.u].x * points[e.v].x
 			}
 		}
 	}
