@@ -35,12 +35,11 @@ func countPaths(adj map[string][]string, start, end string, memo map[string]int)
 	return count
 }
 
-func part1() int {
-	return countPaths(parseInput(), "you", "out", make(map[string]int))
+func part1(adj map[string][]string) int {
+	return countPaths(adj, "you", "out", make(map[string]int))
 }
 
-func part2() int {
-	adj := parseInput()
+func part2(adj map[string][]string) int {
 	// svr -> dac -> fft -> out
 	p1 := countPaths(adj, "svr", "dac", make(map[string]int)) * 
 	      countPaths(adj, "dac", "fft", make(map[string]int)) * 
@@ -54,6 +53,7 @@ func part2() int {
 }
 
 func main() {
-	fmt.Println("Part 1:", part1())
-	fmt.Println("Part 2:", part2())
+	adj := parseInput()
+	fmt.Println("Part 1:", part1(adj))
+	fmt.Println("Part 2:", part2(adj))
 }
